@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Mentoring Platform</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script defer type="text/javascript" src="js/login.js"></script>
+  </head>
+  <body class="login">
+    <div class="wrapper">
+      <h1>Login</h1>
+      <p id="general-error" class="error-message"></p>
+      <form action="html/discovery.html" class="login-form">
+        <div class="input-group">
+          <label for="email" class="label"><span>@</span></label>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              id="email"
+              class="input"
+            />
+            <span class="error-message"></span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="password" class="label">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 -960 960 960"
+              width="24"
+            >
+              <path
+                d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"
+              />
+            </svg>
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              class="input"
+              placeholder="Password"
+            />
+            <span class="error-message"></span>
+          </div>
+        </div>
+        <button class="button" type="submit">Login</button>
+      </form>
+      <p>
+        Don't have an account? <a href="html/signup.html">Create an account</a>
+      </p>
+    </div>
+  </body>
+  <footer>
+    <p>© 2023 Mentor Platform. All rights reserved.</p>
+  </footer>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile</title>
+    <link rel="stylesheet" href="../css/style2.css" />
+    <script defer src="../js/profile.js"></script>
+  </head>
+  <body>
+    <header id="nav">
+      <h2><a href="../html/discovery.html" class="logo">MMP</a></h2>
+      <div class="burger" id="burger-menu">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="navigation" id="nav-links">
+        <a class="nav-e btn" href="#" id="discovery-button">Discovery</a>
+        <a class="nav-e btn active" href="#" id="profile-button">My Profile</a>
+        <a class="nav-e btn" href="#" id="connections-button">Connections</a>
+        <a class="nav-e btn" href="#" id="logout-button">Logout →</a>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="profile-section">
+        <div class="profile-left">
+          <h1>My Profile</h1>
+          <div id="profile-info"></div>
+        </div>
+
+        <div class="profile-right">
+          <h1>Edit Your Profile</h1>
+
+          <form id="edit-profile-form">
+            <h2>1. Basic Information:</h2>
+            <label for="edit-name">Change your Name:</label>
+            <input type="text" id="edit-name" placeholder="Name" />
+
+            <label for="edit-role">Change your Role:</label>
+            <select id="edit-role">
+              <option value="" disabled selected hidden>Select Role</option>
+              <option value="Mentee">Mentee</option>
+              <option value="Mentor">Mentor</option>
+            </select>
+
+            <div id="skills-section">
+              <label for="skill-input">Add Skills:</label>
+              <input type="text" id="skill-input" placeholder="Skill" />
+              <button type="button" id="add-skill-button">Add Skill</button>
+              <div id="skills-container" style="margin-top: 10px"></div>
+            </div>
+
+            <div id="interests-section">
+              <label for="interest-input">Add Interests:</label>
+              <input type="text" id="interest-input" placeholder="Interest" />
+              <button type="button" id="add-interest-button">
+                Add Interest
+              </button>
+              <div id="interests-container" style="margin-top: 10px"></div>
+            </div>
+
+            <label for="edit-bio">Change your Bio:</label>
+            <textarea
+              id="edit-bio"
+              placeholder="Edit your Bio here"
+              rows="4"
+            ></textarea>
+
+            <label for="edit-avatar">Upload Avatar (Image URL):</label>
+            <input
+              type="text"
+              id="edit-avatar"
+              placeholder="Paste image URL here"
+            />
+            <h2>2. Change Pasword:</h2>
+            <label for="current-password">Current Password:</label>
+            <input
+              type="password"
+              id="current-password"
+              placeholder="Current Password"
+            />
+
+            <label for="new-password">New Password:</label>
+            <input
+              type="password"
+              id="new-password"
+              placeholder="New Password"
+            />
+
+            <label for="repeat-password">Repeat New Password:</label>
+            <input
+              type="password"
+              id="repeat-password"
+              placeholder="Repeat New Password"
+            />
+            <div class="button-group">
+              <button type="submit" class="update-btn">Update Profile</button>
+              <button
+                type="button"
+                id="delete-profile-button"
+                class="delete-btn"
+              >
+                Delete Profile
+              </button>
+              <p
+                id="general-error"
+                class="error-message"
+                style="text-align: center; margin-top: 1rem"
+              ></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <p>© 2025 Mentor Platform. All rights reserved.</p>
+  </footer>
+</html>

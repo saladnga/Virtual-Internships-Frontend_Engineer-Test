@@ -1,0 +1,385 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/* ========================
+  1. Base Setup
+======================== */
+:root {
+  --accent-color: #00b1a8;
+  --text-color: #0a2d33;
+  --input-color: #f3f0ff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Poppins, Segoe UI, sans-serif;
+  font-size: 12pt;
+  color: var(--text-color);
+}
+
+/* ========================
+  2. Header (Navbar)
+======================== */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 10px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  backdrop-filter: blur(2px);
+  opacity: 0.9;
+  z-index: 21;
+}
+
+header .logo {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-decoration: none;
+  text-transform: uppercase;
+  background-color: #0a2d33;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  display: flex;
+  align-items: center;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navigation a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #454545;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 17px;
+  padding: 8px 15px;
+  border-radius: 10px;
+  transition: 0.5s;
+  white-space: nowrap;
+}
+
+.navigation a:hover,
+.navigation a.active {
+  color: var(--accent-color);
+}
+
+#logout-button {
+  background-color: #f89122;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+#logout-button:hover {
+  background-color: #c77620;
+}
+
+/* Burger Icon */
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+/* ========================
+  3. Layout (Profile Section)
+======================== */
+.container {
+  margin-top: 100px;
+  padding: 0 5%;
+}
+
+.profile-section {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 20px;
+}
+
+.profile-left,
+.profile-right {
+  background-color: #f3f3f3;
+  border-radius: 20px;
+  padding: 50px;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.profile-left {
+  flex: 0 0 35%;
+}
+
+.profile-left img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin: 25px auto;
+  display: block;
+}
+
+.profile-left h2,
+.profile-left p {
+  text-align: left;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+}
+
+.profile-right {
+  flex: 0 0 65%;
+  border-radius: 12px;
+}
+
+.profile-right h2 {
+  margin: 25px 0;
+  color: #0c8d8a;
+  font-size: 1.5rem;
+  text-decoration: underline;
+}
+
+/* ========================
+  4. Forms
+======================== */
+#edit-profile-form input,
+#edit-profile-form textarea,
+#edit-profile-form select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0 20px 0;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  font-family: inherit;
+  outline: none;
+}
+
+#edit-profile-form input:focus,
+#edit-profile-form textarea:focus,
+#edit-profile-form select:focus {
+  border-bottom: 1px solid var(--accent-color);
+}
+
+label {
+  color: #0c8d8a;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 10px;
+  display: block;
+}
+
+/* ========================
+  5. Buttons
+======================== */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.button-group button,
+#edit-profile-form button {
+  flex: 1;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.update-btn {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.update-btn:hover {
+  background-color: #008d87;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* ========================
+  6. Misc Components
+======================== */
+.skill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  margin: 0 5px 10px 0;
+  background-color: #e0f7fa;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.skill-badge button {
+  all: unset;
+  margin-left: 5px;
+  color: red;
+  cursor: pointer;
+}
+
+.skill-badge button:hover {
+  color: darkred;
+}
+
+#error-message,
+.error-message {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.readmore-text {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.readmore-text:hover {
+  color: var(--accent-color);
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid #f3f3f3;
+  margin: 20px 50px;
+  text-align: center;
+}
+
+/* ========================
+  7. Responsive (Mobile)
+======================== */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: justify-content;
+    padding: 10px 20px;
+  }
+
+  .logo {
+    margin-bottom: 10px;
+  }
+
+  .burger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .burger div {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-color);
+  }
+
+  .navigation {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    background-color: white; /* solid bg */
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .navigation.active {
+    display: flex;
+  }
+
+  .navigation a {
+    width: 100%;
+    text-align: left;
+    padding: 15px 20px;
+    font-size: 17px;
+    color: #0a2d33;
+    border-bottom: 1px solid #eee;
+    background-color: white;
+  }
+
+  .navigation a:hover {
+    background-color: #f7f7f7;
+  }
+
+  .navigation a:last-child {
+    border-bottom: none;
+  }
+  .profile-section {
+    flex-direction: column;
+    margin-top: 300px;
+  }
+
+  .profile-left,
+  .profile-right {
+    flex: 0 0 100%;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .profile-left img {
+    width: 180px;
+    height: 180px;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .navigation {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .navigation.active {
+    display: flex;
+  }
+
+  .navigation a {
+    width: 100%;
+    padding: 15px;
+    border-bottom: 1px solid #f3f3f3;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .navigation a:last-child {
+    border-bottom: none;
+  }
+}

@@ -1,0 +1,280 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+:root {
+  --accent-color: #00b1a8;
+  --danger-color: #f44336;
+  --text-color: #0a2d33;
+  --background-color: #f9f9f9;
+  --base-color: white;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 10px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+  z-index: 21;
+  opacity: 0.9;
+}
+
+header .logo {
+  font-size: 25px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background-color: #0a2d33;
+  background-size: 200% 100%;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  transition: 1.2s;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  height: 50px;
+}
+
+header .navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+header .navigation a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #454545;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: 1px;
+  padding: 8px 15px;
+  border-radius: 10px;
+  transition: 0.5s;
+  white-space: nowrap;
+  height: 100%;
+}
+
+#logout-button {
+  background-color: #f89122;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+header .navigation a:hover,
+header .navigation a.active {
+  color: #00b3a7;
+  opacity: 0.9;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Container */
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 100px auto 40px auto;
+}
+
+/* Headings */
+h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--accent-color);
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.filters select,
+.filters input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 200px;
+}
+
+.filters button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filters button:hover {
+  background-color: #008d87;
+}
+
+/* Members Grid */
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.member-card {
+  background-color: var(--base-color);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+}
+
+.member-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.member-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.member-card p {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+/* Action Buttons inside Card */
+.member-card button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.member-card button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.member-card button:not(:disabled) {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.member-card button:not(:disabled):hover {
+  background-color: #008d87;
+}
+
+/* If it's unmatch */
+.member-card button.unmatch {
+  background-color: var(--danger-color);
+}
+
+.member-card button.unmatch:hover {
+  background-color: #d32f2f;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination-controls button {
+  padding: 10px 20px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-controls button:hover {
+  background-color: #008d87;
+}
+
+/* Links */
+p a {
+  color: var(--accent-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filters select,
+  .filters input,
+  .filters button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+}
