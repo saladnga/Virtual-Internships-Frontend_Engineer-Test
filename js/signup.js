@@ -1,176 +1,180 @@
+import { API } from "../config.js";
+
 class Signup {
   constructor(form, fields) {
     this.form = form;
     this.fields = fields;
-    this.validateOnSubmit();
-    this.validateOnInput();
+
+    // Preload inputs
+    this.inputs = {};
+    fields.forEach((field) => {
+      this.inputs[field] = document.querySelector(`#${field}`);
+    });
+
+    this.handleSubmit();
+    this.attachLiveValidation();
   }
 
-  validateOnSubmit() {
-    let self = this;
-
+  // Handle form submission logic
+  handleSubmit() {
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
-      let error = 0;
 
-      self.fields.forEach((fieldName) => {
-        const input = document.querySelector(`#${fieldName}`);
-        if (self.validateFields(input) == false) {
-          error++;
-        }
-      });
+      // Validate all fields
+      const allValid = this.fields.every((field) =>
+        this.validateField(this.inputs[field])
+      );
+      if (!allValid) return;
 
-      if (error == 0) {
-        const firstname = document
-          .querySelector("#firstname-input")
-          .value.trim();
-        const email = document.querySelector("#email").value.trim();
-        const password = document.querySelector("#password").value.trim();
-        const generalError = document.getElementById("general-error");
-        generalError.innerText = "";
+      // Extract values
+      const yourname = this.inputs["name"].value.trim();
+      const email = this.inputs["email"].value.trim();
+      const password = this.inputs["password"].value.trim();
+      const generalError = document.getElementById("general-error");
+      if (generalError) generalError.textContent = "";
 
-        fetch("https://680e2ef6c47cb8074d92559d.mockapi.io/mentor/api/users")
-          .then((response) => response.json())
-          .then((users) => {
-            const existingUser = users.find((user) => user.email === email);
+      // Check if the email is already registered
+      fetch(API)
+        .then((res) => res.json())
+        .then((users) => {
+          const existingUser = users.find((user) => user.email === email);
 
-            if (existingUser) {
-              generalError.innerText =
+          if (existingUser) {
+            if (generalError)
+              generalError.textContent =
                 "This email is already registered. Please use another one.";
-              throw new Error("Duplicate email.");
-            }
+            throw new Error("Duplicate email.");
+          }
 
-            const newUser = {
-              name: firstname,
-              email: email,
-              password: password,
-              avatar:
-                "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-              role: "",
-              bio: "",
-              skills: [],
-              requests: [],
-            };
+          // Prepare the new user object
+          const newUser = {
+            name: yourname,
+            email: email,
+            password: password,
+            avatar:
+              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+            role: "",
+            bio: "",
+            skills: [],
+            requests: [],
+          };
 
-            return fetch(
-              "https://680e2ef6c47cb8074d92559d.mockapi.io/mentor/api/users",
-              {
-                method: "POST",
-                body: JSON.stringify(newUser),
-                headers: {
-                  "Content-Type": "application/json; charset=UTF-8",
-                },
-              }
-            );
-          })
-          .then((response) => {
-            if (!response || !response.ok) {
-              throw new Error("Failed to create user.");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data) {
-              window.location.href = "../index.html";
-            }
-          })
-          .catch((error) => {
-            console.error("Error during signup:", error);
-            if (error.message !== "Duplicate email.") {
-              generalError.innerText =
-                "Something went wrong. Please try again later.";
-            }
+          // Send the new user data to the API
+          return fetch(API, {
+            method: "POST",
+            body: JSON.stringify(newUser),
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+            },
           });
-      }
-    });
-  }
+        })
 
-  validateOnInput() {
-    let self = this;
-    this.fields.forEach((fieldName) => {
-      const input = document.querySelector(`#${fieldName}`);
-      if (input) {
-        input.addEventListener("input", () => {
-          self.validateFields(input);
+        // Handle the response
+        .then((res) => {
+          if (!res || !res.ok) {
+            throw new Error("Failed to create user.");
+          }
+          return res.json();
+        })
+
+        // Redirect to the login page
+        .then((data) => {
+          if (data) {
+            window.location.href = "../index.html";
+          }
+        })
+
+        // Handle errors
+        .catch((err) => {
+          console.error("Error during signup:", err);
+
+          if (generalError && err.message !== "Duplicate email.") {
+            generalError.textContent =
+              "Something went wrong. Please try again later.";
+          }
         });
-      }
     });
   }
 
-  validateFields(field) {
+  // Attach live validation to each field
+  attachLiveValidation() {
+    this.fields.forEach((fieldName) => {
+      const input = this.inputs[fieldName];
+      if (!input) return;
+
+      input.addEventListener("input", () => {
+        this.validateField(input);
+      });
+    });
+  }
+
+  // Validate each field
+  validateField(field) {
     const fieldName =
       field.getAttribute("placeholder") || field.name || "Field";
+    const value = field.value.trim();
 
-    if (field.value.trim() === "") {
-      this.setStatus(field, `${fieldName} cannot be empty`, "error");
+    if (!value) {
+      this.updateStatus(field, `${fieldName} cannot be empty`, "error");
       return false;
-    } else {
-      if (field.type == "email") {
-        if (!this.validateEmailFormat(field.value)) {
-          this.setStatus(
-            field,
-            `${fieldName} is not valid email format`,
-            "error"
-          );
-          return false;
-        }
-      } else if (field.id === "repeat-password-input") {
-        const originalPassword = document
-          .querySelector("#password")
-          .value.trim();
-        if (field.value !== originalPassword) {
-          this.setStatus(field, "Passwords do not match", "error");
-          return false;
-        }
-      } else if (field.type == "password") {
-        if (field.value.length < 8) {
-          this.setStatus(
-            field,
-            `${fieldName} must be at least 8 characters`,
-            "error"
-          );
-          return false;
-        }
-      }
-
-      this.setStatus(field, null, "success");
-      return true;
     }
+
+    // Check if the email is valid by regex
+    if (field.type === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        this.updateStatus(
+          field,
+          `${fieldName} is not valid email format`,
+          "error"
+        );
+        return false;
+      }
+    }
+
+    // Check if the password and repeat password match
+    if (field.id === "repeat-password-input") {
+      const originalPassword = this.inputs["password"].value.trim();
+      if (value !== originalPassword) {
+        this.updateStatus(field, "Passwords do not match", "error");
+        return false;
+      }
+    }
+
+    // Check if the password is at least 8 characters long
+    if (field.type === "password" && value.length < 8) {
+      this.updateStatus(
+        field,
+        `${fieldName} must be at least 8 characters`,
+        "error"
+      );
+      return false;
+    }
+
+    this.updateStatus(field, null, "success");
+    return true;
   }
 
-  setStatus(field, message, status) {
+  // Update the status of the field
+  updateStatus(field, message, status) {
     const wrapper = field.closest(".input-wrapper");
-    const errorMessage = wrapper.querySelector(".error-message");
+    const errorMessage = wrapper?.querySelector(".error-message");
 
     if (status === "success") {
-      if (errorMessage) {
-        errorMessage.innerText = "";
-      }
+      if (errorMessage) errorMessage.textContent = "";
       field.classList.remove("input-error");
     }
 
     if (status === "error") {
-      if (errorMessage) {
-        errorMessage.innerText = message;
-      }
+      if (errorMessage) errorMessage.textContent = message;
       field.classList.add("input-error");
     }
   }
-
-  validateEmailFormat(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
 }
 
-// Initialize
+// Only initialize when form is present
 const form = document.querySelector(".signup-form");
 if (form) {
-  const fields = [
-    "firstname-input",
-    "email",
-    "password",
-    "repeat-password-input",
-  ];
-  const validation = new Signup(form, fields);
+  const fields = ["name", "email", "password", "repeat-password-input"];
+  new Signup(form, fields);
 }

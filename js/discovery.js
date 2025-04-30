@@ -1,247 +1,277 @@
-const API = "https://680e2ef6c47cb8074d92559d.mockapi.io/mentor/api/users";
-let allUsers = [];
-let currentUser = null;
+import { API } from "../config.js";
 
-let currentPage = 1;
-const itemsPerPage = 5; // Show 5 users per page
+class Discovery {
+  constructor() {
+    // Initialize variables
+    this.allUsers = [];
+    this.currentUser = JSON.parse(localStorage.getItem("user"));
+    this.currentPage = 1;
+    this.itemsPerPage = 6;
 
-document.addEventListener("DOMContentLoaded", () => {
-  currentUser = JSON.parse(localStorage.getItem("user"));
+    // Cannot access if not logged in
+    if (!this.currentUser) {
+      window.location.href = "../index.html";
+      return;
+    }
 
-  if (!currentUser) {
-    alert("You must be logged in to use discovery!");
-    window.location.href = "login.html";
-    return;
+    // Personalize username and navbar events
+    document.getElementById("user-name").textContent =
+      this.currentUser.name || "User";
+    this.setupNavbar();
+    this.attachEvents();
+    this.fetchMembers();
   }
 
-  // ✅ Navbar navigation setup
-  const discoveryButton = document.getElementById("discovery-button");
-  const profileButton = document.getElementById("profile-button");
-  const connectionsButton = document.getElementById("connections-button");
-  const logoutButton = document.getElementById("logout-button");
+  setupNavbar() {
+    const navLinks = [
+      { id: "discovery-button", path: "discovery.html" },
+      { id: "profile-button", path: "profile.html" },
+      { id: "connections-button", path: "connections.html" },
+    ];
 
-  if (discoveryButton) {
-    discoveryButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.location.href = "../html/discovery.html";
+    navLinks.forEach(({ id, path }) => {
+      document.getElementById(id)?.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.location.href = `../html/${path}`;
+      });
     });
-  }
 
-  if (profileButton) {
-    profileButton.addEventListener("click", (e) => {
+    document.getElementById("logout-button")?.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.href = "../html/profile.html";
-    });
-  }
-
-  if (connectionsButton) {
-    connectionsButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.location.href = "../html/mentor-dashboard.html";
-    });
-  }
-
-  if (logoutButton) {
-    logoutButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("auth");
       localStorage.removeItem("user");
       window.location.href = "../index.html";
     });
   }
 
-  // ✅ Main discovery page logic
-  fetchMembers();
+  attachEvents() {
+    // Event listeners for filters and pagination
+    document.getElementById("search-button").addEventListener("click", () => {
+      this.currentPage = 1;
+      this.filterMembers();
+    });
 
-  document.getElementById("search-button").addEventListener("click", () => {
-    currentPage = 1;
-    filterMembers();
-  });
+    // Pagination logic
+    document.getElementById("prev-page").addEventListener("click", () => {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.filterMembers();
+      }
+    });
 
-  document.getElementById("prev-page").addEventListener("click", () => {
-    if (currentPage > 1) {
-      currentPage--;
-      filterMembers();
-    }
-  });
+    document.getElementById("next-page").addEventListener("click", () => {
+      if (this.currentPage * this.itemsPerPage < this.allUsers.length) {
+        this.currentPage++;
+        this.filterMembers();
+      }
+    });
 
-  document.getElementById("next-page").addEventListener("click", () => {
-    if (currentPage * itemsPerPage < allUsers.length) {
-      currentPage++;
-      filterMembers();
-    }
-  });
-
-  document.getElementById("skill-filter").addEventListener("keyup", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      currentPage = 1;
-      filterMembers();
-    }
-  });
-});
-
-// 📋 Fetch all users
-function fetchMembers() {
-  fetch(API)
-    .then((response) => response.json())
-    .then((users) => {
-      allUsers = users.filter((user) => user.id !== currentUser.id);
-      filterMembers();
-    })
-    .catch((error) => console.error("Error fetching members:", error));
-}
-
-// 📋 Display members
-function displayMembers(users) {
-  const membersList = document.getElementById("members-list");
-  membersList.innerHTML = "";
-
-  if (users.length === 0) {
-    membersList.innerHTML = "<p>No members found.</p>";
-    return;
+    // Trigger filter on Enter key
+    ["skill-filter", "interest-filter"].forEach((id) => {
+      document.getElementById(id).addEventListener("keyup", (e) => {
+        if (e.key === "Enter") {
+          this.currentPage = 1;
+          this.filterMembers();
+        }
+      });
+    });
   }
 
-  const start = (currentPage - 1) * itemsPerPage;
-  const paginatedUsers = users.slice(start, start + itemsPerPage);
+  fetchMembers() {
+    // Load all users from API except current user
+    fetch(API)
+      .then((res) => res.json())
+      .then((users) => {
+        this.allUsers = users.filter((u) => u.id !== this.currentUser.id);
+        this.filterMembers();
+      })
+      .catch((err) => console.error("Fetch error:", err));
+  }
 
-  paginatedUsers.forEach((user) => {
-    const memberCard = document.createElement("div");
-    memberCard.className = "member-card";
+  filterMembers() {
+    // Get filter values
+    const roleFilter = document
+      .getElementById("role-filter")
+      .value.trim()
+      .toLowerCase();
+    const skillFilter = document
+      .getElementById("skill-filter")
+      .value.trim()
+      .toLowerCase();
+    const interestFilter = document
+      .getElementById("interest-filter")
+      .value.trim()
+      .toLowerCase();
 
-    let actionButton = "";
+    // Filter users based on selected criteria
+    const filtered = this.allUsers.filter((user) => {
+      const roleMatch = !roleFilter || user.role?.toLowerCase() === roleFilter;
+      const skillMatch =
+        !skillFilter ||
+        user.skills?.some((s) => s.toLowerCase().includes(skillFilter));
+      const interestMatch =
+        !interestFilter ||
+        user.interests?.some((i) => i.toLowerCase().includes(interestFilter));
+      return roleMatch && skillMatch && interestMatch;
+    });
 
-    const alreadyConnected = currentUser.connections?.includes(user.id);
-    const alreadyRequested = user.requests?.includes(currentUser.id);
+    this.displayMembers(filtered);
+  }
 
-    if (alreadyConnected) {
-      actionButton = `<button class="unmatch-btn" onclick="unmatchConnection('${user.id}')">Unmatch</button>`;
-    } else if (alreadyRequested) {
-      actionButton = `<button class="request-btn" disabled>Request Sent</button>`;
-    } else {
-      actionButton = `<button class="request-btn" onclick="sendMentorshipRequest('${user.id}')">Send Request</button>`;
+  displayMembers(users) {
+    const membersList = document.getElementById("members-list");
+    membersList.innerHTML = "";
+
+    if (users.length === 0) {
+      membersList.innerHTML = "<p>No members found.</p>";
+      return;
     }
 
-    memberCard.innerHTML = `
-      <img src="${user.avatar}" alt="Avatar" width="100" height="100" />
-      <h3>${user.name || "No Name"}</h3>
-      <p><strong>Role:</strong> ${user.role || "No Role"}</p>
-      <p><strong>Skills:</strong> ${
-        user.skills && user.skills.length
-          ? user.skills.join(", ")
-          : "No skills listed"
-      }</p>
-      <p><strong>Bio:</strong> ${user.bio || "No bio provided"}</p>
-      ${actionButton}
-    `;
+    // Paginate
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const paginatedUsers = users.slice(start, start + this.itemsPerPage);
 
-    membersList.appendChild(memberCard);
-  });
+    paginatedUsers.forEach((user) => {
+      const card = document.createElement("div");
+      card.className = "member-card";
 
-  updatePaginationControls(users.length);
-}
+      // Decide action button based on connection status
+      const alreadyConnected = this.currentUser.connections?.includes(user.id);
+      const alreadyRequested = user.requests?.includes(this.currentUser.id);
 
-// 🆕 Update Prev/Next buttons
-function updatePaginationControls(totalItems) {
-  const prevBtn = document.getElementById("prev-page");
-  const nextBtn = document.getElementById("next-page");
+      let actionButton = "";
+      if (alreadyConnected) {
+        actionButton = `<button class="unmatch" onclick="discovery.unmatchConnection('${user.id}')">Unmatch</button>`;
+      } else if (alreadyRequested) {
+        actionButton = `<button onclick="discovery.undoMentorshipRequest('${user.id}')">Undo Request</button>`;
+      } else {
+        actionButton = `<button onclick="discovery.sendMentorshipRequest('${user.id}')">Send Request</button>`;
+      }
 
-  prevBtn.disabled = currentPage === 1;
-  nextBtn.disabled = currentPage * itemsPerPage >= totalItems;
-}
+      // Render user card
+      card.innerHTML = `
+        <img src="${user.avatar}" alt="Avatar" />
+        <h3>${user.name || "No Name"}</h3>
+        <p><strong>Role:</strong> ${user.role || "Unknown"}</p>
+        <p><strong>Skills:</strong> ${this.truncate(
+          user.skills?.join(", ") || "None"
+        )}</p>
+        <p><strong>Interests:</strong> ${this.truncate(
+          user.interests?.join(", ") || "None"
+        )}</p>
+        <p><strong>Bio:</strong> ${this.truncate(
+          user.bio || "No bio available",
+          100
+        )}</p>
+        ${actionButton}
+        <button onclick="window.location.href='../html/user-profile.html?id=${
+          user.id
+        }'">View Profile</button>
+      `;
 
-// 📋 Filter
-function filterMembers() {
-  const selectedRole = document
-    .getElementById("role-filter")
-    .value.trim()
-    .toLowerCase();
-  const skillSearch = document
-    .getElementById("skill-filter")
-    .value.trim()
-    .toLowerCase();
+      membersList.appendChild(card);
+    });
 
-  const filtered = allUsers.filter((user) => {
-    const roleMatch =
-      selectedRole === "" || user.role?.toLowerCase() === selectedRole;
-    const skillMatch =
-      skillSearch === "" ||
-      (user.skills &&
-        user.skills.some((s) => s.toLowerCase().includes(skillSearch)));
+    this.updatePaginationControls(users.length);
+  }
 
-    return roleMatch && skillMatch;
-  });
+  truncate(text, length = 50) {
+    return text.length > length ? text.substring(0, length) + "..." : text;
+  }
 
-  displayMembers(filtered);
-}
+  updatePaginationControls(totalItems) {
+    const prevBtn = document.getElementById("prev-page");
+    const nextBtn = document.getElementById("next-page");
 
-// 📩 Send mentorship request
-function sendMentorshipRequest(targetId) {
-  fetch(`${API}/${targetId}`)
-    .then((res) => res.json())
-    .then((targetUser) => {
-      if (!targetUser.requests.includes(currentUser.id)) {
-        targetUser.requests.push(currentUser.id);
+    prevBtn.disabled = this.currentPage === 1;
+    nextBtn.disabled = this.currentPage * this.itemsPerPage >= totalItems;
+
+    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+    let pageInfo = document.getElementById("page-info");
+
+    // Create page info element if it doesn't exist
+    if (!pageInfo) {
+      pageInfo = document.createElement("div");
+      pageInfo.id = "page-info";
+      pageInfo.style.marginTop = "10px";
+      pageInfo.style.textAlign = "center";
+      prevBtn.parentNode.insertAdjacentElement("afterend", pageInfo);
+    }
+    pageInfo.innerHTML = `Page ${this.currentPage} of ${totalPages}`;
+  }
+
+  // Add request to target user
+  sendMentorshipRequest(targetId) {
+    fetch(`${API}/${targetId}`)
+      .then((res) => res.json())
+      .then((targetUser) => {
+        targetUser.requests = Array.isArray(targetUser.requests)
+          ? targetUser.requests
+          : [];
+        if (!targetUser.requests.includes(this.currentUser.id)) {
+          targetUser.requests.push(this.currentUser.id);
+          return fetch(`${API}/${targetId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ requests: targetUser.requests }),
+          });
+        }
+      })
+      .then(() => this.fetchMembers())
+      .catch((err) => console.error("Request error:", err));
+  }
+
+  // Remove current user from target user's requests
+  undoMentorshipRequest(targetId) {
+    fetch(`${API}/${targetId}`)
+      .then((res) => res.json())
+      .then((targetUser) => {
+        targetUser.requests = targetUser.requests.filter(
+          (id) => id !== this.currentUser.id
+        );
+        return fetch(`${API}/${targetId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ requests: targetUser.requests }),
+        });
+      })
+      .then(() => this.fetchMembers())
+      .catch((err) => console.error("Undo request error:", err));
+  }
+
+  // Remove current user from target user's connections
+  unmatchConnection(targetId) {
+    if (!confirm("Are you sure you want to unmatch?")) return;
+
+    const updatedConnections = this.currentUser.connections.filter(
+      (id) => id !== targetId
+    );
+
+    fetch(`${API}/${this.currentUser.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ connections: updatedConnections }),
+    })
+      .then((res) => res.json())
+      .then((updatedUser) => {
+        this.currentUser = updatedUser;
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        return fetch(`${API}/${targetId}`);
+      })
+      .then((res) => res.json())
+      .then((targetUser) => {
+        const updatedTargetConnections =
+          targetUser.connections?.filter((id) => id !== this.currentUser.id) ||
+          [];
 
         return fetch(`${API}/${targetId}`, {
           method: "PUT",
-          body: JSON.stringify({ requests: targetUser.requests }),
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ connections: updatedTargetConnections }),
         });
-      } else {
-        throw new Error("Already sent.");
-      }
-    })
-    .then((res) => res.json())
-    .then(() => {
-      alert("Request sent!");
-      fetchMembers();
-    })
-    .catch((err) => {
-      console.error("Error sending request:", err);
-      alert(err.message);
-    });
-}
-
-// 📩 Unmatch connection
-function unmatchConnection(targetId) {
-  if (!confirm("Are you sure you want to unmatch?")) {
-    return;
+      })
+      .then(() => this.fetchMembers())
+      .catch((err) => console.error("Unmatch error:", err));
   }
-
-  const updatedMyConnections = currentUser.connections.filter(
-    (id) => id !== targetId
-  );
-
-  fetch(`${API}/${currentUser.id}`, {
-    method: "PUT",
-    body: JSON.stringify({ connections: updatedMyConnections }),
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => res.json())
-    .then((updatedUser) => {
-      currentUser = updatedUser;
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      return fetch(`${API}/${targetId}`);
-    })
-    .then((res) => res.json())
-    .then((targetUser) => {
-      const updatedTargetConnections = targetUser.connections
-        ? targetUser.connections.filter((id) => id !== currentUser.id)
-        : [];
-
-      return fetch(`${API}/${targetId}`, {
-        method: "PUT",
-        body: JSON.stringify({ connections: updatedTargetConnections }),
-        headers: { "Content-Type": "application/json" },
-      });
-    })
-    .then(() => {
-      alert("Unmatched!");
-      fetchMembers();
-    })
-    .catch((err) => {
-      console.error("Error unmatching:", err);
-      alert("Error occurred. Please try again.");
-    });
 }
+
+window.discovery = new Discovery();

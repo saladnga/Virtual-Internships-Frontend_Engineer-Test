@@ -1,138 +1,129 @@
-// Define the Login class
+import { API } from "../config.js";
+
+// Login class handles user login, field validation, and submission
 class Login {
   constructor(form, fields) {
-    // Save the form element and fields
     this.form = form;
     this.fields = fields;
-    this.validateonSubmit(); // Call the validateonSubmit method to set up validation when the form is submitted
-    this.validateOnInput();
+
+    // Preload inputs
+    this.inputs = {};
+    fields.forEach((field) => {
+      this.inputs[field] = document.querySelector(`#${field}`);
+    });
+
+    this.handleSubmit();
+    this.attachLiveValidation();
   }
 
-  // Method to validate the form on submission
-  validateonSubmit() {
-    let self = this;
-
-    // Listen for the form submit event
+  // Attach form submit handler
+  handleSubmit() {
     this.form.addEventListener("submit", (e) => {
-      e.preventDefault(); // Stop the form from submitting immediately
+      e.preventDefault();
+      const allValid = this.fields.every((field) =>
+        this.validateField(this.inputs[field])
+      );
+      if (!allValid) return;
 
-      let error = 0; // Initialize error count
+      const data = {
+        email: this.inputs["email"].value.trim(),
+        password: this.inputs["password"].value.trim(),
+      };
 
-      // Loop through each field and validate it
-      self.fields.forEach((field) => {
-        const input = document.querySelector(`#${field}`);
-        if (self.validateFields(input) == false) {
-          error++;
-        }
-      });
+      // Authenticate user and redirect
+      fetch(API)
+        .then((res) => res.json())
+        .then((users) => {
+          const user = users.find(
+            (u) => u.email === data.email && u.password === data.password
+          );
 
-      // If there are no errors, proceed with the login process
-      if (error == 0) {
-        var data = {
-          email: document.querySelector("#email").value, // change to email
-          password: document.querySelector("#password").value,
-        };
-
-        // Fetch the user data from the mock API
-        fetch("https://680e2ef6c47cb8074d92559d.mockapi.io/mentor/api/users")
-          .then((response) => response.json())
-          .then((users) => {
-            // Check if the user exists in the fetched data
-            const user = users.find(
-              (u) => u.email === data.email && u.password === data.password
-            );
-
-            if (user) {
-              // If user exists, store the user data in localStorage
-              localStorage.setItem("auth", 1);
-              localStorage.setItem("user", JSON.stringify(user));
-
-              // Redirect to the profile page
-              window.location.href = "html/discovery.html";
-            } else {
-              const generalError = document.getElementById("general-error");
-              generalError.innerText = "Invalid email or password";
-            }
-          })
-          .catch((error) => {
-            alert("There was an error logging in: " + error);
-          });
-      }
-    });
-  }
-
-  validateOnInput() {
-    let self = this;
-
-    this.fields.forEach((fieldName) => {
-      const input = document.querySelector(`#${fieldName}`);
-
-      if (input) {
-        // Listen to "input" event (whenever user types)
-        input.addEventListener("input", () => {
-          self.validateFields(input); // Validate this field live
+          if (user) {
+            // Save login state and redirect
+            localStorage.setItem("auth", 1);
+            localStorage.setItem("user", JSON.stringify(user));
+            window.location.href = "html/discovery.html";
+          } else {
+            // Display error if fails
+            const generalError = document.getElementById("general-error");
+            if (generalError)
+              generalError.textContent = "Invalid email or password";
+          }
+        })
+        .catch((err) => {
+          alert("Login error: " + err);
         });
-      }
     });
   }
 
-  // Method to validate individual fields
-  validateFields(field) {
+  // Attach live validation to fields
+  attachLiveValidation() {
+    this.fields.forEach((fieldName) => {
+      const input = this.inputs[fieldName];
+      if (!input) return;
+
+      input.addEventListener("input", () => {
+        this.validateField(input);
+      });
+    });
+  }
+
+  // Validate individual field
+  validateField(field) {
     const fieldName =
       field.getAttribute("placeholder") || field.name || "Field";
+    const value = field.value.trim();
 
-    if (field.value.trim() == "") {
-      this.setStatus(field, `${fieldName} cannot be empty`, "error");
+    if (!value) {
+      this.updateStatus(field, `${fieldName} cannot be empty`, "error");
       return false;
-    } else {
-      if (field.type == "email") {
-        if (!field.value.includes("@") || !field.value.includes(".")) {
-          this.setStatus(
-            field,
-            `${fieldName} is not a valid email format`,
-            "error"
-          );
-          return false;
-        }
-      } else if (field.type == "password") {
-        if (field.value.length < 8) {
-          this.setStatus(
-            field,
-            `${fieldName} must be at least 8 characters`,
-            "error"
-          );
-          return false;
-        }
-      }
-      this.setStatus(field, null, "success");
-      return true;
     }
+
+    // Regex validation for email
+    if (field.type === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        this.updateStatus(
+          field,
+          `${fieldName} is not a valid email format`,
+          "error"
+        );
+        return false;
+      }
+      // Check if email is already registered and length is more than 8
+    } else if (field.type === "password" && value.length < 8) {
+      this.updateStatus(
+        field,
+        `${fieldName} must be at least 8 characters`,
+        "error"
+      );
+      return false;
+    }
+
+    this.updateStatus(field, null, "success");
+    return true;
   }
 
-  // Method to set the status of a field (success or error)
-  setStatus(field, message, status) {
+  // Update field status
+  updateStatus(field, message, status) {
     const wrapper = field.closest(".input-wrapper");
-    const errorMessage = wrapper.querySelector(".error-message");
+    const errorMessage = wrapper?.querySelector(".error-message");
 
     if (status === "success") {
-      if (errorMessage) {
-        errorMessage.innerText = "";
-      }
+      if (errorMessage) errorMessage.textContent = "";
       field.classList.remove("input-error");
     }
 
     if (status === "error") {
-      if (errorMessage) {
-        errorMessage.innerText = message;
-      }
+      if (errorMessage) errorMessage.textContent = message;
       field.classList.add("input-error");
     }
   }
 }
 
-// Check if the form exists in the DOM before initializing the Login class
+// Only initialize when form is present
 const form = document.querySelector(".login-form");
 if (form) {
   const fields = ["email", "password"];
-  const validation = new Login(form, fields);
+  new Login(form, fields);
 }
