@@ -4,21 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Discovery</title>
-    <link rel="stylesheet" href="../css/style4.css" />
-    <script defer src="../js/discovery.js"></script>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/user.css" />
+    <link rel="website icon" type="png" href="../global.png" />
+    <script type="module" defer src="../js/discovery.js"></script>
   </head>
+
   <body>
     <header id="nav">
-      <h2><a href="../html/discovery.html" class="logo">Mentor Platform</a></h2>
-      <div class="navigation">
+      <h2><a href="../html/discovery.html" class="logo">MMP</a></h2>
+      <div class="burger" id="burger-menu">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="navigation" id="nav-links">
         <a class="nav-e btn active" href="#" id="discovery-button">Discovery</a>
         <a class="nav-e btn" href="#" id="profile-button">My Profile</a>
         <a class="nav-e btn" href="#" id="connections-button">Connections</a>
         <a class="nav-e btn" href="#" id="logout-button">Logout →</a>
       </div>
     </header>
+
     <div class="container">
       <h1 class="text-center">Discover Mentors & Mentees</h1>
+      <h1 class="text-center">Welcome back, <span id="user-name"></span>!</h1>
 
       <div class="filters">
         <select id="role-filter">
@@ -27,19 +37,25 @@
           <option value="mentee">Mentee</option>
         </select>
 
-        <input type="text" id="skill-filter" placeholder="Search by skill..." />
+        <input type="text" id="skill-filter" placeholder="Search by skill" />
+        <input
+          type="text"
+          id="interest-filter"
+          placeholder="Search by interest"
+        />
         <button id="search-button">Search</button>
       </div>
 
       <div id="members-list" class="members-grid"></div>
 
-      <div
-        class="pagination-controls"
-        style="margin-top: 20px; text-align: center"
-      >
+      <div class="pagination-controls">
         <button id="prev-page">Prev</button>
         <button id="next-page">Next</button>
       </div>
     </div>
   </body>
+
+  <footer>
+    <p>© 2025 Mentor Platform. All rights reserved.</p>
+  </footer>
 </html>

@@ -1,0 +1,154 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+:root {
+  --accent-color: #00b1a8;
+  --base-color: white;
+  --text-color: #0a2d33;
+  --input-color: #f3f0ff;
+  --danger-color: #f44336;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Container */
+.container {
+  margin-top: 120px;
+  padding: 20px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+button {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+button:hover {
+  background-color: #008d87;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+section {
+  margin-bottom: 50px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+}
+
+#pending-requests,
+#connections-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+#connections-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+#connections-list .member-card {
+  width: 300px;
+}
+
+.member-card {
+  width: 100%;
+  max-width: 300px;
+  background-color: #f3f3f3;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+}
+
+.member-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.member-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.member-card p {
+  font-size: 1rem;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.member-card button {
+  margin-top: 10px;
+  margin-inline: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.member-card button:first-child {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.member-card button:first-child:hover {
+  background-color: #008d87;
+}
+
+.member-card button:last-child {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.member-card button:last-child:hover {
+  background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  p {
+    text-align: center;
+  }
+
+  .member-card {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
